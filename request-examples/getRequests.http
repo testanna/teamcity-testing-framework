@@ -1,0 +1,4 @@
+### Get build configuration
+GET http://192.168.1.26:8111/app/rest/buildTypes/id:SpringCoreForQa_Build
+Accept: application/json
+X-TC-CSRF-Token:4c950dc1-158f-4ae5-80b2-0159449aa928
