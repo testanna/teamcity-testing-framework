@@ -85,6 +85,9 @@ public class RolesTest extends BaseApiTest {
 
         new UncheckedBuildConfig(Specification.getSpec().authSpec(secondTestData.getUser()))
                 .create(firstTestData.getBuildType())
-                .then().assertThat().statusCode(HttpStatus.SC_BAD_REQUEST);
+                .then().assertThat().statusCode(HttpStatus.SC_FORBIDDEN)
+                .body(Matchers.containsString(
+                        "You do not have enough permissions to edit project with id: "
+                                + firstTestData.getProject().getId()));
     }
 }

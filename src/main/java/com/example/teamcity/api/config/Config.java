@@ -1,7 +1,6 @@
 package com.example.teamcity.api.config;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.Properties;
 
 public class Config {
@@ -22,15 +21,14 @@ public class Config {
     }
 
     public void loadProperties(String fileName) {
-        try (InputStream stream = Config.class.getClassLoader().getResourceAsStream(fileName)) {
-            if (stream == null) {
+        try (final var file = Config.class.getClassLoader().getResourceAsStream(fileName)) {
+            if (file == null) {
                 System.err.println("File not found " + fileName);
                 return;
             }
-            properties.load(stream);
+            properties.load(file);
         } catch (IOException e) {
-            System.err.println("Error during file reading " + fileName);
-            throw new RuntimeException(e);
+            throw new RuntimeException("Error during file reading " + fileName, e);
         }
     }
 

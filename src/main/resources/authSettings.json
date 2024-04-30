@@ -1,0 +1,43 @@
+{
+  "perProjectPermissions": true,
+  "modules": {
+    "module": [
+      {
+        "name": "HTTP-Basic"
+      },
+      {
+        "name": "Default",
+        "properties": {
+          "property": [
+            {
+              "name": "usersCanResetOwnPasswords",
+              "value": true
+            },
+            {
+              "name": "usersCanChangeOwnPasswords",
+              "value": true
+            },
+            {
+              "name": "freeRegistrationAllowed",
+              "value": false
+            }
+          ]
+        }
+      },
+      {
+        "name": "Token-Auth"
+      },
+      {
+        "name": "LDAP",
+        "properties": {
+          "property": [
+            {
+              "name": "allowCreatingNewUsersByLogin",
+              "value": true
+            }
+          ]
+        }
+      }
+    ]
+  }
+}
