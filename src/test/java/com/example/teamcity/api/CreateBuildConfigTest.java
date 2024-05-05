@@ -2,9 +2,10 @@ package com.example.teamcity.api;
 
 import com.example.teamcity.api.generators.RandomData;
 import com.example.teamcity.api.generators.TestData;
-import com.example.teamcity.api.requests.checked.CheckedBuildConfig;
-import com.example.teamcity.api.requests.checked.CheckedProject;
-import com.example.teamcity.api.requests.unchecked.UncheckedBuildConfig;
+import com.example.teamcity.api.model.BuildType;
+import com.example.teamcity.api.model.Project;
+import com.example.teamcity.api.requests.checked.CheckedBase;
+import com.example.teamcity.api.requests.unchecked.UncheckedBase;
 import com.example.teamcity.api.spec.Specification;
 import org.apache.http.HttpStatus;
 import org.hamcrest.Matchers;
@@ -23,7 +24,7 @@ public class CreateBuildConfigTest extends BaseApiTest {
 
     @Test
     public void createBuildConfigWithCorrectId() {
-        var createdBuildConfig = new CheckedBuildConfig(Specification.getSpec().authSpec(testData.getUser()))
+        var createdBuildConfig = (BuildType) new CheckedBase(Specification.getSpec().authSpec(testData.getUser()), BuildType.class)
                 .create(testData.getBuildType());
 
         softy.assertThat(createdBuildConfig.getId()).isEqualTo(testData.getBuildType().getId());
@@ -38,13 +39,13 @@ public class CreateBuildConfigTest extends BaseApiTest {
         var secondBuildConfig = secondTestData.getBuildType();
         secondBuildConfig.setId(firstBuildConfig.getId());
 
-        new CheckedProject(Specification.getSpec().authSpec(firstTestData.getUser()))
+        new CheckedBase(Specification.getSpec().authSpec(firstTestData.getUser()), Project.class)
                 .create(secondTestData.getProject());
 
-        new CheckedBuildConfig(Specification.getSpec().authSpec(firstTestData.getUser()))
+        new CheckedBase(Specification.getSpec().authSpec(firstTestData.getUser()), BuildType.class)
                 .create(firstBuildConfig);
 
-        new UncheckedBuildConfig(Specification.getSpec().authSpec(firstTestData.getUser()))
+        new UncheckedBase(Specification.getSpec().authSpec(firstTestData.getUser()), BuildType.class)
                 .create(secondBuildConfig)
                 .then().assertThat().statusCode(HttpStatus.SC_BAD_REQUEST)
                 .body(Matchers.containsString(
@@ -61,13 +62,13 @@ public class CreateBuildConfigTest extends BaseApiTest {
         var secondBuildConfig = secondTestData.getBuildType();
         secondBuildConfig.setName(firstBuildConfig.getName());
 
-        new CheckedProject(Specification.getSpec().authSpec(firstTestData.getUser()))
+        new CheckedBase(Specification.getSpec().authSpec(firstTestData.getUser()), Project.class)
                 .create(secondTestData.getProject());
 
-        new CheckedBuildConfig(Specification.getSpec().authSpec(firstTestData.getUser()))
+        new CheckedBase(Specification.getSpec().authSpec(firstTestData.getUser()), BuildType.class)
                 .create(firstBuildConfig);
 
-        var createdBuildConfig = new CheckedBuildConfig(Specification.getSpec().authSpec(firstTestData.getUser()))
+        var createdBuildConfig = (BuildType) new CheckedBase(Specification.getSpec().authSpec(firstTestData.getUser()), BuildType.class)
                 .create(secondBuildConfig);
 
         softy.assertThat(createdBuildConfig.getId()).isEqualTo(secondBuildConfig.getId());
@@ -83,10 +84,10 @@ public class CreateBuildConfigTest extends BaseApiTest {
         secondBuildConfig.setName(firstBuildConfig.getName());
         secondBuildConfig.setProject(firstTestData.getProject());
 
-        new CheckedBuildConfig(Specification.getSpec().authSpec(firstTestData.getUser()))
+        new CheckedBase(Specification.getSpec().authSpec(firstTestData.getUser()), BuildType.class)
                 .create(firstBuildConfig);
 
-        new UncheckedBuildConfig(Specification.getSpec().authSpec(firstTestData.getUser()))
+        new UncheckedBase(Specification.getSpec().authSpec(firstTestData.getUser()), BuildType.class)
                 .create(secondBuildConfig)
                 .then().assertThat().statusCode(HttpStatus.SC_BAD_REQUEST)
                 .body(Matchers.containsString(String.format(
@@ -104,7 +105,7 @@ public class CreateBuildConfigTest extends BaseApiTest {
     public void buildConfigShouldNotBeCreatedWithEmptyId() {
         testData.getBuildType().setId("");
 
-        new UncheckedBuildConfig(Specification.getSpec().authSpec(testData.getUser()))
+        new UncheckedBase(Specification.getSpec().authSpec(testData.getUser()), BuildType.class)
                 .create(testData.getBuildType())
                 .then().assertThat().statusCode(HttpStatus.SC_INTERNAL_SERVER_ERROR)
                 .body(Matchers.containsString("Build configuration or template ID must not be empty"));
@@ -114,7 +115,7 @@ public class CreateBuildConfigTest extends BaseApiTest {
     public void buildConfigShouldNotBeCreatedWithEmptyName() {
         testData.getBuildType().setName("");
 
-        new UncheckedBuildConfig(Specification.getSpec().authSpec(testData.getUser()))
+        new UncheckedBase(Specification.getSpec().authSpec(testData.getUser()), BuildType.class)
                 .create(testData.getBuildType())
                 .then().assertThat().statusCode(HttpStatus.SC_BAD_REQUEST)
                 .body(Matchers.containsString("When creating a build type, non empty name should be provided"));
@@ -130,7 +131,7 @@ public class CreateBuildConfigTest extends BaseApiTest {
     public void createBuildConfigWithLongName() {
         testData.getBuildType().setName(RandomData.getString(5000));
 
-        var createdBuildConfig = new CheckedBuildConfig(Specification.getSpec().authSpec(testData.getUser()))
+        var createdBuildConfig = (BuildType) new CheckedBase(Specification.getSpec().authSpec(testData.getUser()), BuildType.class)
                 .create(testData.getBuildType());
 
         softy.assertThat(createdBuildConfig.getName()).isEqualTo(testData.getBuildType().getName());
@@ -140,7 +141,7 @@ public class CreateBuildConfigTest extends BaseApiTest {
     public void createBuildConfigWithSpecialSymbolsInName() {
         testData.getBuildType().setName("!@#$%^&*()~:,.;'|/?" + RandomData.getString());
 
-        var createdBuildConfig = new CheckedBuildConfig(Specification.getSpec().authSpec(testData.getUser()))
+        var createdBuildConfig = (BuildType) new CheckedBase(Specification.getSpec().authSpec(testData.getUser()), BuildType.class)
                 .create(testData.getBuildType());
 
         softy.assertThat(createdBuildConfig.getName()).isEqualTo(testData.getBuildType().getName());
@@ -150,7 +151,7 @@ public class CreateBuildConfigTest extends BaseApiTest {
     public void buildConfigShouldNotBeCreatedWithEmptyProject() {
         testData.getBuildType().setProject(null);
 
-        new UncheckedBuildConfig(Specification.getSpec().authSpec(testData.getUser()))
+        new UncheckedBase(Specification.getSpec().authSpec(testData.getUser()), BuildType.class)
                 .create(testData.getBuildType())
                 .then().assertThat().statusCode(HttpStatus.SC_BAD_REQUEST)
                 .body(Matchers.containsString("Build type creation request should contain project node"));

@@ -2,10 +2,10 @@ package com.example.teamcity.api;
 
 import com.example.teamcity.api.enums.Role;
 import com.example.teamcity.api.generators.TestDataGenerator;
-import com.example.teamcity.api.requests.checked.CheckedBuildConfig;
-import com.example.teamcity.api.requests.checked.CheckedProject;
-import com.example.teamcity.api.requests.unchecked.UncheckedBuildConfig;
-import com.example.teamcity.api.requests.unchecked.UncheckedProject;
+import com.example.teamcity.api.model.BuildType;
+import com.example.teamcity.api.model.Project;
+import com.example.teamcity.api.requests.checked.CheckedBase;
+import com.example.teamcity.api.requests.unchecked.UncheckedBase;
 import com.example.teamcity.api.spec.Specification;
 import org.apache.http.HttpStatus;
 import org.hamcrest.Matchers;
@@ -16,7 +16,7 @@ public class RolesTest extends BaseApiTest {
     public void unauthorizedUserShouldNotHaveRightToCreateProject() {
         var testData = testDataStorage.addTestData();
 
-        new UncheckedProject(Specification.getSpec().unauthSpec())
+        new UncheckedBase(Specification.getSpec().unauthSpec(), Project.class)
                 .create(testData.getProject())
                 .then().assertThat().statusCode(HttpStatus.SC_UNAUTHORIZED)
                 .body(Matchers.containsString("Authentication required"));
@@ -37,8 +37,8 @@ public class RolesTest extends BaseApiTest {
         uncheckedWithSuperuser.getUserRequest()
                 .create(testData.getUser());
 
-        var project = new CheckedProject(Specification.getSpec()
-                .authSpec(testData.getUser()))
+        var project = (Project) new CheckedBase(Specification.getSpec()
+                .authSpec(testData.getUser()), Project.class)
                 .create(testData.getProject());
 
         softy.assertThat(project.getId()).isEqualTo(testData.getProject().getId());
@@ -58,7 +58,8 @@ public class RolesTest extends BaseApiTest {
         checkedWithSuperuser.getUserRequest()
                 .create(testData.getUser());
 
-        var buildConfig = new CheckedBuildConfig(Specification.getSpec().authSpec(testData.getUser()))
+        var buildConfig = (BuildType) new CheckedBase(Specification.getSpec().authSpec(testData.getUser()),
+                BuildType.class)
                 .create(testData.getBuildType());
 
         softy.assertThat(buildConfig.getId()).isEqualTo(testData.getBuildType().getId());
@@ -83,7 +84,7 @@ public class RolesTest extends BaseApiTest {
         checkedWithSuperuser.getUserRequest()
                 .create(secondTestData.getUser());
 
-        new UncheckedBuildConfig(Specification.getSpec().authSpec(secondTestData.getUser()))
+        new UncheckedBase(Specification.getSpec().authSpec(secondTestData.getUser()), BuildType.class)
                 .create(firstTestData.getBuildType())
                 .then().assertThat().statusCode(HttpStatus.SC_FORBIDDEN)
                 .body(Matchers.containsString(
