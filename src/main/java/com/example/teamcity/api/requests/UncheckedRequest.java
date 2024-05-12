@@ -8,9 +8,9 @@ import lombok.Getter;
 
 @Getter
 public class UncheckedRequest {
-    private UncheckedUser userRequest;
-    private UncheckedProject projectRequest;
-    private UncheckedBuildConfig buildConfigRequest;
+    private final UncheckedUser userRequest;
+    private final UncheckedProject projectRequest;
+    private final UncheckedBuildConfig buildConfigRequest;
 
     public UncheckedRequest(RequestSpecification spec) {
         this.userRequest = new UncheckedUser(spec);
