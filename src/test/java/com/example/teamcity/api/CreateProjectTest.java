@@ -2,8 +2,9 @@ package com.example.teamcity.api;
 
 import com.example.teamcity.api.generators.RandomData;
 import com.example.teamcity.api.generators.TestData;
-import com.example.teamcity.api.requests.checked.CheckedProject;
-import com.example.teamcity.api.requests.unchecked.UncheckedProject;
+import com.example.teamcity.api.model.Project;
+import com.example.teamcity.api.requests.checked.CheckedBase;
+import com.example.teamcity.api.requests.unchecked.UncheckedBase;
 import com.example.teamcity.api.spec.Specification;
 import org.apache.http.HttpStatus;
 import org.hamcrest.Matchers;
@@ -21,8 +22,7 @@ public class CreateProjectTest extends BaseApiTest {
 
     @Test
     public void createProjectWithCorrectId() {
-        var project = new CheckedProject(Specification.getSpec()
-                .authSpec(testData.getUser()))
+        var project = (Project) new CheckedBase(Specification.getSpec().authSpec(testData.getUser()), Project.class)
                 .create(testData.getProject());
 
         softy.assertThat(project.getId()).isEqualTo(testData.getProject().getId());
@@ -37,10 +37,10 @@ public class CreateProjectTest extends BaseApiTest {
         var secondProject = secondTestData.getProject();
         secondProject.setId(firstProject.getId());
 
-        new CheckedProject(Specification.getSpec().authSpec(firstTestData.getUser()))
+        new CheckedBase(Specification.getSpec().authSpec(firstTestData.getUser()), Project.class)
                 .create(firstProject);
 
-        new UncheckedProject(Specification.getSpec().authSpec(firstTestData.getUser()))
+        new UncheckedBase(Specification.getSpec().authSpec(firstTestData.getUser()), Project.class)
                 .create(secondProject)
                 .then().assertThat().statusCode(HttpStatus.SC_BAD_REQUEST)
                 .body(Matchers.containsString(
@@ -56,10 +56,10 @@ public class CreateProjectTest extends BaseApiTest {
         var secondProject = secondTestData.getProject();
         secondProject.setName(firstProject.getName());
 
-        new CheckedProject(Specification.getSpec().authSpec(firstTestData.getUser()))
+        new CheckedBase(Specification.getSpec().authSpec(firstTestData.getUser()), Project.class)
                 .create(firstProject);
 
-        new UncheckedProject(Specification.getSpec().authSpec(firstTestData.getUser()))
+        new UncheckedBase(Specification.getSpec().authSpec(firstTestData.getUser()), Project.class)
                 .create(secondProject)
                 .then().assertThat().statusCode(HttpStatus.SC_BAD_REQUEST)
                 .body(Matchers.containsString(
@@ -76,7 +76,7 @@ public class CreateProjectTest extends BaseApiTest {
     public void projectShouldNotBeCreatedWithEmptyId() {
         testData.getProject().setId("");
 
-        new UncheckedProject(Specification.getSpec().authSpec(testData.getUser()))
+        new UncheckedBase(Specification.getSpec().authSpec(testData.getUser()), Project.class)
                 .create(testData.getProject())
                 .then().assertThat().statusCode(HttpStatus.SC_INTERNAL_SERVER_ERROR)
                 .body(Matchers.containsString("Project ID must not be empty"));
@@ -86,7 +86,7 @@ public class CreateProjectTest extends BaseApiTest {
     public void projectShouldNotBeCreatedWithEmptyName() {
         testData.getProject().setName("");
 
-        new UncheckedProject(Specification.getSpec().authSpec(testData.getUser()))
+        new UncheckedBase(Specification.getSpec().authSpec(testData.getUser()), Project.class)
                 .create(testData.getProject())
                 .then().assertThat().statusCode(HttpStatus.SC_BAD_REQUEST)
                 .body(Matchers.containsString("Project name cannot be empty"));
@@ -102,7 +102,7 @@ public class CreateProjectTest extends BaseApiTest {
     public void projectShouldBeCreatedWithLongName() {
         testData.getProject().setName(RandomData.getString(5000));
 
-        var project = new CheckedProject(Specification.getSpec().authSpec(testData.getUser()))
+        var project = (Project)new CheckedBase(Specification.getSpec().authSpec(testData.getUser()), Project.class)
                 .create(testData.getProject());
 
         softy.assertThat(project.getName()).isEqualTo(testData.getProject().getName());
@@ -112,7 +112,7 @@ public class CreateProjectTest extends BaseApiTest {
     public void projectShouldBeCreatedWithSpecialSymbolsInName() {
         testData.getProject().setName("!@#$%^&*()~:,.;'|/?" + RandomData.getString());
 
-        var project = new CheckedProject(Specification.getSpec().authSpec(testData.getUser()))
+        var project = (Project)new CheckedBase(Specification.getSpec().authSpec(testData.getUser()), Project.class)
                 .create(testData.getProject());
 
         softy.assertThat(project.getName()).isEqualTo(testData.getProject().getName());

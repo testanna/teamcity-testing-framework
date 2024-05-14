@@ -26,6 +26,6 @@ public class BaseApiTest extends BaseTest {
 
     @AfterMethod
     public void cleanTest() {
-        testDataStorage.delete();
+        testDataStorage.deleteCreatedEntities();
     }
 }
