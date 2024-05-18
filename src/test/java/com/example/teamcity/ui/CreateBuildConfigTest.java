@@ -1,21 +1,21 @@
 package com.example.teamcity.ui;
 
 import com.codeborne.selenide.Condition;
-import com.example.teamcity.api.generators.RandomData;
 import com.example.teamcity.api.generators.TestData;
+import com.example.teamcity.api.model.BuildType;
 import com.example.teamcity.api.model.Project;
 import com.example.teamcity.ui.pages.admin.CreateNewProject;
 import com.example.teamcity.ui.pages.favorites.ProjectsPage;
 import org.apache.http.HttpStatus;
 import org.testng.annotations.Test;
 
-public class CreateProjectTest extends BaseUiTest {
+public class CreateBuildConfigTest extends BaseUiTest {
     private TestData testData;
+    private static final String url = "https://github.com/testanna/Scoring";
 
     @Test
-    public void authorizedUserShouldBeAbleCreateProject() {
+    public void authorizedUserShouldBeAbleCreateProjectAndBuildConfig() {
         testData = testDataStorage.addTestData();
-        var url = "https://github.com/testanna/Scoring";
 
         loginAsUser(testData.getUser());
 
@@ -31,48 +31,40 @@ public class CreateProjectTest extends BaseUiTest {
 
         var apiProject = (Project) checkedWithSuperuser.getProjectRequest()
                 .getByName(testData.getProject().getName());
+        var apiBuildConfig = (BuildType) checkedWithSuperuser.getBuildConfigRequest()
+                .getByName(testData.getBuildType().getName());
 
-        softy.assertThat(apiProject.getParentProjectId()).isEqualTo("_Root");
+        softy.assertThat(apiBuildConfig.getProjectName()).isEqualTo(apiProject.getName());
+        softy.assertThat(apiBuildConfig.getProjectId()).isEqualTo(apiProject.getId());
     }
 
     @Test
-    public void projectShouldNotBeCreatedWithEmptyUrl() {
+    public void buildConfigShouldNotBeCreatedWithEmptyBranch() {
         testData = testDataStorage.addTestData();
-        var url = "";
+        var defaultBranch = "";
 
         loginAsUser(testData.getUser());
 
         var errorMessage = new CreateNewProject()
                 .open(testData.getProject().getParentProject().getLocator())
                 .createProjectByUrl(url)
-                .getUrlError();
-
-        softy.assertThat(errorMessage).isEqualTo("URL must not be empty");
-
-        uncheckedWithSuperuser.getProjectRequest()
-                .getByName(testData.getProject().getName())
-                .then()
-                .assertThat().statusCode(HttpStatus.SC_NOT_FOUND);
-    }
-
-    @Test
-    public void projectShouldNotBeCreatedWithInvalidUrl() {
-        testData = testDataStorage.addTestData();
-        var url = RandomData.getString();
-
-        loginAsUser(testData.getUser());
-
-        var errorMessage = new CreateNewProject()
-                .open(testData.getProject().getParentProject().getLocator())
-                .createProjectByUrl(url)
-                .getUrlError();
+                .enterNames(testData.getProject().getName(), testData.getBuildType().getName())
+                .enterBranch(defaultBranch)
+                .clickProceed()
+                .getDefaultBranchError();
 
         softy.assertThat(errorMessage)
-                .isEqualTo("Cannot create a project using the specified URL. The URL is not recognized.");
+                .isEqualTo("Branch name must be specified");
 
         uncheckedWithSuperuser.getProjectRequest()
                 .getByName(testData.getProject().getName())
                 .then()
                 .assertThat().statusCode(HttpStatus.SC_NOT_FOUND);
+
+        uncheckedWithSuperuser.getBuildConfigRequest()
+                .getByName(testData.getBuildType().getName())
+                .then()
+                .assertThat()
+                .statusCode(HttpStatus.SC_NOT_FOUND);
     }
 }
