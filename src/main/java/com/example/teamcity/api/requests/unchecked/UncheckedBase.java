@@ -47,7 +47,15 @@ public class UncheckedBase extends Request implements CrudInterface {
 
     @Override
     public Response get(String id) {
-        return given().spec(spec).get(endpoint + "/id:" + id);
+        return get("id", id);
+    }
+
+    public Response getByName(String name) {
+        return get("name", name);
+    }
+
+    private Response get(String locatorName, String locatorValue) {
+        return given().spec(spec).get(endpoint + "/" + locatorName + ":" + locatorValue);
     }
 
     @Override

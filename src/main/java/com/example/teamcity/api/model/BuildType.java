@@ -13,4 +13,6 @@ public class BuildType {
     private String id;
     private String name;
     private NewProjectDescription project;
+    private String projectId;
+    private String projectName;
 }

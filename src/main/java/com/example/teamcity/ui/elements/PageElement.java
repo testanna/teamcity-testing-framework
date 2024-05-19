@@ -5,7 +5,7 @@ import com.codeborne.selenide.SelenideElement;
 import org.openqa.selenium.By;
 
 public abstract class PageElement {
-    private final SelenideElement element;
+    protected final SelenideElement element;
 
     public PageElement(SelenideElement element) {
         this.element = element;

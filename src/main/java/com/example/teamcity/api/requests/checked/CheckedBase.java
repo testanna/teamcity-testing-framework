@@ -31,6 +31,13 @@ public class CheckedBase extends Request implements CrudInterface {
                 .extract().as(responseType);
     }
 
+    public Object getByName(String name) {
+        return new UncheckedBase(spec, responseType)
+                .getByName(name)
+                .then().assertThat().statusCode(HttpStatus.SC_OK)
+                .extract().as(responseType);
+    }
+
     @Override
     public Object update(Object object) {
         return null;
