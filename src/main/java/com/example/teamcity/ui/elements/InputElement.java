@@ -27,6 +27,6 @@ public class InputElement extends ProjectElement {
     }
 
     public void waitUntilInputIsVisible() {
-        element.shouldBe(Condition.visible, Duration.ofSeconds(10));
+        element.shouldBe(Condition.visible, Duration.ofSeconds(15));
     }
 }

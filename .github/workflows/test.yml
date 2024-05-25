@@ -85,3 +85,12 @@ jobs:
 
       - name: Run all tests
         run: ./mvnw test
+
+      - name: Upload test results and screenshots
+        if: always()
+        uses: actions/upload-artifact@v3
+        with:
+          name: test-artifacts
+          path: |
+            target/surefire-reports/*.png
+            target/surefire-reports/*.html
