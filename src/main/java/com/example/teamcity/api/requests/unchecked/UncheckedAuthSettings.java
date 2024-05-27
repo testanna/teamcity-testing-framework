@@ -9,7 +9,7 @@ import static io.restassured.RestAssured.given;
 
 public class UncheckedAuthSettings extends Request {
     private static final String AUTH_SETTINGS_ENDPOINT = "/app/rest/server/authSettings";
-    private final static String AUTH_SETTINGS_FILE = "AuthSettings.json";
+    private final static String AUTH_SETTINGS_FILE = "authsettings.json";
 
     public UncheckedAuthSettings() {
         super(Specification.getSpec().superUserSpec());
@@ -21,7 +21,8 @@ public class UncheckedAuthSettings extends Request {
      * TODO Create AuthSettings model for setting authentication parameters
      */
     public void setDefaultAuthSettings() {
-        try (var authSettings = UncheckedAuthSettings.class.getClassLoader().getResourceAsStream(AUTH_SETTINGS_FILE)) {
+        try (var authSettings = UncheckedAuthSettings.class.getClassLoader()
+                .getResourceAsStream( AUTH_SETTINGS_FILE)) {
             given().spec(Specification.getSpec().superUserSpec()).body(authSettings)
                     .put(AUTH_SETTINGS_ENDPOINT);
         } catch (IOException e) {

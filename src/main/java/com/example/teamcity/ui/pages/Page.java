@@ -25,11 +25,11 @@ public abstract class Page {
 
     public void waitUntilDataIsSaved() {
         savingWaitingMarker.shouldNotBe(Condition.visible, Duration.ofSeconds(30));
-        //savingWaitingMarker.shouldBe(Condition.attribute("style", "display: none; "), Duration.ofSeconds(30));
     }
 
     public void waitUntilPageIsLoaded() {
-        pageWaitingMarker.shouldNotBe(Condition.visible, Duration.ofSeconds(60));
+        pageWaitingMarker.shouldNotBe(Condition.visible, Duration.ofMinutes(2));
+
     }
 
     public <T extends PageElement> List<T> generatePageElements(
