@@ -6,6 +6,7 @@ import com.example.teamcity.api.model.Project;
 import com.example.teamcity.api.requests.checked.CheckedBase;
 import com.example.teamcity.api.requests.unchecked.UncheckedBase;
 import com.example.teamcity.api.spec.Specification;
+import io.qameta.allure.*;
 import org.apache.http.HttpStatus;
 import org.hamcrest.Matchers;
 import org.testng.annotations.BeforeMethod;
@@ -15,12 +16,18 @@ public class CreateProjectTest extends BaseApiTest {
     private TestData testData;
 
     @BeforeMethod
+    @Step("Add test data and create a user")
     public void addTestDataAndCreateUser() {
         testData = testDataStorage.addTestData();
         checkedWithSuperuser.getUserRequest().create(testData.getUser());
     }
 
     @Test
+    @Epic("Project Management")
+    @Feature("Project Creation")
+    @Story("Create project with a valid ID")
+    @Severity(SeverityLevel.CRITICAL)
+    @Description("Create Project with Correct ID")
     public void createProjectWithCorrectId() {
         var project = (Project) new CheckedBase(Specification.getSpec().authSpec(testData.getUser()), Project.class)
                 .create(testData.getProject());
@@ -29,6 +36,11 @@ public class CreateProjectTest extends BaseApiTest {
     }
 
     @Test
+    @Epic("Project Management")
+    @Feature("Project Creation")
+    @Story("Prevent creation of projects with duplicate IDs")
+    @Severity(SeverityLevel.CRITICAL)
+    @Description("Project Should Not Be Created With The Same ID")
     public void projectShouldNotBeCreatedWithTheSameId() {
         var firstTestData = testData;
         var secondTestData = testDataStorage.addTestData();
@@ -48,6 +60,11 @@ public class CreateProjectTest extends BaseApiTest {
     }
 
     @Test
+    @Epic("Project Management")
+    @Feature("Project Creation")
+    @Story("Prevent creation of projects with duplicate names")
+    @Severity(SeverityLevel.CRITICAL)
+    @Description("Project Should Not Be Created With The Same Name")
     public void projectShouldNotBeCreatedWithTheSameName() {
         var firstTestData = testData;
         var secondTestData = testDataStorage.addTestData();
@@ -73,6 +90,11 @@ public class CreateProjectTest extends BaseApiTest {
     }
 
     @Test
+    @Epic("Project Management")
+    @Feature("Project Creation")
+    @Story("Prevent creation of projects with empty ID")
+    @Severity(SeverityLevel.CRITICAL)
+    @Description("Project Should Not Be Created With Empty ID")
     public void projectShouldNotBeCreatedWithEmptyId() {
         testData.getProject().setId("");
 
@@ -83,6 +105,11 @@ public class CreateProjectTest extends BaseApiTest {
     }
 
     @Test
+    @Epic("Project Management")
+    @Feature("Project Creation")
+    @Story("Prevent creation of projects with empty name")
+    @Severity(SeverityLevel.CRITICAL)
+    @Description("Project Should Not Be Created With Empty Name")
     public void projectShouldNotBeCreatedWithEmptyName() {
         testData.getProject().setName("");
 
@@ -99,6 +126,11 @@ public class CreateProjectTest extends BaseApiTest {
     }
 
     @Test
+    @Epic("Project Management")
+    @Feature("Project Creation")
+    @Story("Create project with a long name")
+    @Severity(SeverityLevel.NORMAL)
+    @Description("Project Should Be Created With Long Name")
     public void projectShouldBeCreatedWithLongName() {
         testData.getProject().setName(RandomData.getString(5000));
 
@@ -109,6 +141,11 @@ public class CreateProjectTest extends BaseApiTest {
     }
 
     @Test
+    @Epic("Project Management")
+    @Feature("Project Creation")
+    @Story("Create project with special symbols in the name")
+    @Severity(SeverityLevel.NORMAL)
+    @Description("Project Should Be Created With Special Symbols In Name")
     public void projectShouldBeCreatedWithSpecialSymbolsInName() {
         testData.getProject().setName("!@#$%^&*()~:,.;'|/?" + RandomData.getString());
 

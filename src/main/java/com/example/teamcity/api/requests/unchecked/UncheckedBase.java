@@ -3,10 +3,12 @@ package com.example.teamcity.api.requests.unchecked;
 import com.example.teamcity.api.generators.TestDataStorage;
 import com.example.teamcity.api.requests.CrudInterface;
 import com.example.teamcity.api.requests.Request;
+import com.github.viclovsky.swagger.coverage.SwaggerCoverageRestAssured;
+import io.restassured.RestAssured;
+import io.restassured.config.ObjectMapperConfig;
+import io.restassured.mapper.ObjectMapperType;
 import io.restassured.response.Response;
 import io.restassured.specification.RequestSpecification;
-
-import static io.restassured.RestAssured.given;
 
 public class UncheckedBase extends Request implements CrudInterface {
     private String endpoint;
@@ -76,5 +78,10 @@ public class UncheckedBase extends Request implements CrudInterface {
                 .delete(PROJECT_ENDPOINT + "/" + locatorName + ":" + locatorValue);
     }
 
-
+    public static RequestSpecification given() {
+        return RestAssured.given()
+                .config(RestAssured.config()
+                        .objectMapperConfig(new ObjectMapperConfig(ObjectMapperType.GSON)))
+                .filter(new SwaggerCoverageRestAssured());
+    }
 }
