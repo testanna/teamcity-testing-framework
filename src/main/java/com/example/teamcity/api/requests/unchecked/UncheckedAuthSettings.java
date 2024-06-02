@@ -2,6 +2,7 @@ package com.example.teamcity.api.requests.unchecked;
 
 import com.example.teamcity.api.requests.Request;
 import com.example.teamcity.api.spec.Specification;
+import com.github.viclovsky.swagger.coverage.SwaggerCoverageRestAssured;
 
 import java.io.IOException;
 
@@ -22,8 +23,9 @@ public class UncheckedAuthSettings extends Request {
      */
     public void setDefaultAuthSettings() {
         try (var authSettings = UncheckedAuthSettings.class.getClassLoader()
-                .getResourceAsStream( AUTH_SETTINGS_FILE)) {
-            given().spec(Specification.getSpec().superUserSpec()).body(authSettings)
+                .getResourceAsStream(AUTH_SETTINGS_FILE)) {
+            given().filter(new SwaggerCoverageRestAssured())
+                    .spec(Specification.getSpec().superUserSpec()).body(authSettings)
                     .put(AUTH_SETTINGS_ENDPOINT);
         } catch (IOException e) {
             throw new RuntimeException(e);
