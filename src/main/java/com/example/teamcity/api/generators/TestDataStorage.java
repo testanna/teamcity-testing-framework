@@ -70,8 +70,6 @@ public class TestDataStorage {
             } else {
                 new UncheckedBase(Specification.getSpec().superUserSpec(), objectClass).delete(id);
             }
-
-            System.out.println("Object id = " + id + " was deleted");
         }
         createdEntities.clear();
     }

@@ -12,5 +12,4 @@ public class TestData {
     private User user;
     private NewProjectDescription project;
     private BuildType buildType;
-
 }
